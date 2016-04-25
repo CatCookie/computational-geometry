@@ -1,0 +1,6 @@
+D:\Workspace\CompGeo1\CompGeo1\bin\Debug\CompGeo1.exe.config
+D:\Workspace\CompGeo1\CompGeo1\bin\Debug\CompGeo1.exe
+D:\Workspace\CompGeo1\CompGeo1\bin\Debug\CompGeo1.pdb
+D:\Workspace\CompGeo1\CompGeo1\obj\Debug\CompGeo1.csprojResolveAssemblyReference.cache
+D:\Workspace\CompGeo1\CompGeo1\obj\Debug\CompGeo1.exe
+D:\Workspace\CompGeo1\CompGeo1\obj\Debug\CompGeo1.pdb
