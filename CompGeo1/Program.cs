@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Globalization;
 
 namespace CompGeo1
 {
 
+    // Vector , Point
     class Vec
     {
         public float x, y;
@@ -17,49 +19,79 @@ namespace CompGeo1
             this.x = x;
             this.y = y;
         }
+
+        public bool Equals(Vec other, float epsilon)
+        {
+            if (Math.Abs(this.x - other.x) <= epsilon && Math.Abs(this.y - other.y) <= epsilon)
+                return true;
+            else
+                return false;
+        }
+
+
     }
 
     class Line
     {
+        public const float EPSYLON = 1E-5f;
+
+        // Line Number
         public int nr;
         public Vec p, q;
-        public Vec n;
-        public float a;
 
         public Line(int nr, Vec p, Vec q)
         {
             this.p = p;
             this.q = q;
             this.nr = nr;
-            n = new Vec(p.y - q.y, q.x - p.x);
-            a = p.y * q.x - p.x * q.y;
         }
 
         public bool intersect(Line other)
         {
-            float ccw1 = ccw(this, other.p);
-            float ccw2 = ccw(this, other.q);
-            float ccw3 = ccw(other, this.p);
-            float ccw4 = ccw(other, this.q);
-
-            if (ccw1 == ccw2)
+            if (this.p.Equals(this.q, EPSYLON) && other.p.Equals(other.q, EPSYLON))
             {
-                if (this.p.x == this.q.x)
-                {
-                    return (other.p.y <= Math.Max(p.y, q.y) && other.p.y >= Math.Min(p.y, q.y));
-                }
-                else
-                {
-                    return (other.p.x <= Math.Max(p.x, q.x) && other.p.x >= Math.Min(p.x, q.x));
-                }
+                return this.p.Equals(other.p, EPSYLON);
             }
+            else
+            {
+                float ccw1 = ccw(this.p, this.q, other.p);
+                float ccw2 = ccw(this.p, this.q, other.q);
+                float ccw3 = ccw(other.p, other.q, this.p);
+                float ccw4 = ccw(other.p, other.q, this.q);
 
-            return (ccw1 * ccw2 <= 0 & ccw3 * ccw4 <= 0);
+                // Beide Punkte von "other" liegen auf der selben Seite
+                if (ccw1 * ccw2 > EPSYLON)
+                    return false;
+
+                // Die Punkte von "other" liegen auf unterschiedlichen Seiten.
+                if (ccw1 * ccw2 < -EPSYLON)
+                    return ccw3 * ccw4 <= EPSYLON; 
+
+                // Mindestens ein Punkt von "other" liegt auf "this"
+                if (Math.Abs(ccw1) <= EPSYLON
+                && other.p.x <= Math.Max(p.x, q.x) && other.p.x >= Math.Min(p.x, q.x)
+                && other.p.y <= Math.Max(p.y, q.y) && other.p.y >= Math.Min(p.y, q.y))
+                {
+                    return true;
+                }
+
+                if (Math.Abs(ccw2) <= EPSYLON
+                    && other.q.x <= Math.Max(p.x, q.x) && other.q.x >= Math.Min(p.x, q.x)
+                    && other.q.y <= Math.Max(p.y, q.y) && other.q.y >= Math.Min(p.y, q.y))
+                {
+                    return true;
+                }
+
+                return false; //(ccw1 * ccw2 <= EPSYLON && ccw3 * ccw4 <= EPSYLON);
         }
+    }
 
-        public static float ccw(Line line, Vec r)
+        public static float ccw(Vec p, Vec q, Vec r)
         {
-            return line.n.x * r.x + line.n.y * r.y - line.a;
+            Vec n = new Vec(p.y - q.y, q.x - p.x);
+            float a = p.y * q.x - p.x * q.y;
+
+            return n.x * r.x + n.y * r.y - a;
         }
     }
 
@@ -68,6 +100,7 @@ namespace CompGeo1
 
     class Program
     {
+
         static void Main(string[] args)
         {
 
@@ -75,7 +108,8 @@ namespace CompGeo1
 
             List<Line> lines = new List<Line>();
 
-            StreamReader f = new StreamReader("s_1000_1.dat");
+            StreamReader f = new StreamReader("s_10000_1.dat");
+            //StreamReader f = new StreamReader("test.dat");
 
             int lineNr = 0;
             string txtLine;
@@ -83,35 +117,30 @@ namespace CompGeo1
             {
                 txtLine = txtLine.Trim();
                 string[] Vecs = txtLine.Split(' ');
-                float ax = float.Parse(Vecs[0]);
-                float ay = float.Parse(Vecs[1]);
-                float bx = float.Parse(Vecs[2]);
-                float by = float.Parse(Vecs[3]);
+                float ax = float.Parse(Vecs[0], CultureInfo.InvariantCulture);
+                float ay = float.Parse(Vecs[1], CultureInfo.InvariantCulture);
+                float bx = float.Parse(Vecs[2], CultureInfo.InvariantCulture);
+                float by = float.Parse(Vecs[3], CultureInfo.InvariantCulture);
                 lines.Add(new Line(++lineNr, new Vec(ax, ay), new Vec(bx, by)));
             }
 
+            long maxIntersect = (int) Math.Pow(lines.Count,2) / 2;
+            Console.WriteLine(maxIntersect);
 
             int found = 0;
             int all = 0;
             for (int i = 0; i < lines.Count; i++)
-                for (int j = i + 1; j < lines.Count; j++)
+                for (int j = i+1; j < lines.Count; j++)
                 {
                     all++;
-                    if (lines[i].intersect(lines[j]))
+                    if (all % 1000000 == 0)
+                        Console.WriteLine(String.Format("Progress: {0}%", Math.Round((double)all /maxIntersect * 100, 1)));
+                    if (lines[i].intersect(lines[j]) && lines[j].intersect(lines[i]))
                     {
-                        Console.WriteLine(String.Format("Intersection found between lines {0} and {1}", lines[i].nr, lines[j].nr));
+                        //Console.WriteLine(String.Format("Intersection found between lines {0} and {1}", lines[i].nr, lines[j].nr));
                         found++;
                     }
                 }
-
-
-            foreach (Line l1 in lines)
-            {
-                foreach (Line l2 in lines)
-                {
-
-                }
-            }
 
             Console.WriteLine(all + " Lines intersected and " + found + " intersections found");
             Console.ReadKey();
