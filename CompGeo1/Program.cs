@@ -65,7 +65,7 @@ namespace CompGeo1
 
                 // Die Punkte von "other" liegen auf unterschiedlichen Seiten.
                 if (ccw1 * ccw2 < -EPSYLON)
-                    return ccw3 * ccw4 <= EPSYLON; 
+                    return ccw3 * ccw4 <= EPSYLON;
 
                 // Mindestens ein Punkt von "other" liegt auf "this"
                 if (Math.Abs(ccw1) <= EPSYLON
@@ -83,8 +83,8 @@ namespace CompGeo1
                 }
 
                 return false; //(ccw1 * ccw2 <= EPSYLON && ccw3 * ccw4 <= EPSYLON);
+            }
         }
-    }
 
         public static float ccw(Vec p, Vec q, Vec r)
         {
@@ -108,7 +108,7 @@ namespace CompGeo1
 
             List<Line> lines = new List<Line>();
 
-            StreamReader f = new StreamReader("s_10000_1.dat");
+            StreamReader f = new StreamReader("s_100000_1.dat");
             //StreamReader f = new StreamReader("test.dat");
 
             int lineNr = 0;
@@ -124,17 +124,20 @@ namespace CompGeo1
                 lines.Add(new Line(++lineNr, new Vec(ax, ay), new Vec(bx, by)));
             }
 
-            long maxIntersect = (int) Math.Pow(lines.Count,2) / 2;
+            long maxIntersect = (long)Math.Pow(lines.Count, 2) / 2;
             Console.WriteLine(maxIntersect);
 
             int found = 0;
             int all = 0;
             for (int i = 0; i < lines.Count; i++)
-                for (int j = i+1; j < lines.Count; j++)
+                for (int j = i + 1; j < lines.Count; j++)
                 {
                     all++;
                     if (all % 1000000 == 0)
-                        Console.WriteLine(String.Format("Progress: {0}%", Math.Round((double)all /maxIntersect * 100, 1)));
+                    {
+                        Console.Write(String.Format("Progress: {0}%    ", Math.Round((double)all / maxIntersect * 100, 1)));
+                        Console.SetCursorPosition(0, Console.CursorTop );
+                    }
                     if (lines[i].intersect(lines[j]) && lines[j].intersect(lines[i]))
                     {
                         //Console.WriteLine(String.Format("Intersection found between lines {0} and {1}", lines[i].nr, lines[j].nr));

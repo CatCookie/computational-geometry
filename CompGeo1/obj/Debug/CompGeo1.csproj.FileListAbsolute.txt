@@ -10,3 +10,9 @@ D:\Workspace\computational-geometry\CompGeo1\obj\Debug\CompGeo1.pdb
 D:\Workspace\computational-geometry\CompGeo1\bin\Debug\CompGeo1.exe
 D:\Workspace\computational-geometry\CompGeo1\bin\Debug\CompGeo1.pdb
 D:\Workspace\computational-geometry\CompGeo1\obj\Debug\CompGeo1.csprojResolveAssemblyReference.cache
+D:\VSProjects\computational-geometry\CompGeo1\bin\Debug\CompGeo1.exe.config
+D:\VSProjects\computational-geometry\CompGeo1\obj\Debug\CompGeo1.exe
+D:\VSProjects\computational-geometry\CompGeo1\obj\Debug\CompGeo1.pdb
+D:\VSProjects\computational-geometry\CompGeo1\bin\Debug\CompGeo1.exe
+D:\VSProjects\computational-geometry\CompGeo1\bin\Debug\CompGeo1.pdb
+D:\VSProjects\computational-geometry\CompGeo1\obj\Debug\CompGeo1.csprojResolveAssemblyReference.cache

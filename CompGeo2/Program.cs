@@ -1,92 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Xml;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace CompGeo2
 {
 
     class Vec
     {
-        public double x, y;
+        public float x { get; set; }
+        public float y { get; set; }
 
-        public Vec(double x, double y)
+        public Vec(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public bool Equals(Vec other, double epsilon)
+        public bool Equals(Vec other, float epsilon)
         {
             if (Math.Abs(this.x - other.x) <= epsilon && Math.Abs(this.y - other.y) <= epsilon)
                 return true;
             else
                 return false;
         }
-
-
     }
 
-    class Line
+    class Polygon
     {
-        public int nr;
-        public Vec p, q;
-        public Vec n;
-        public double a;
+        public List<Vec> points { get; set; }
+        private float cArea = 0.0f;
 
-        public Line(int nr, Vec p, Vec q)
+        public Polygon()
         {
-            this.p = p;
-            this.q = q;
-            this.nr = nr;
-            n = new Vec(p.y - q.y, q.x - p.x);
-            a = p.y * q.x - p.x * q.y;
+            points = new List<Vec>();
         }
 
-        public bool intersect(Line other)
+        public float area()
         {
-            double ccw1 = ccw(this, other.p);
-            double ccw2 = ccw(this, other.q);
-            double ccw3 = ccw(other, this.p);
-            double ccw4 = ccw(other, this.q);
-
-            if (Math.Abs(ccw1 - ccw2) <= 0.000001f)
+            cArea = 0.0f;
+            for (int i = 1; i <= points.Count; i++)
             {
-                if (Math.Abs(this.p.x - this.q.x) <= 0.000001f)
-                {
-                    return (other.p.y <= Math.Max(p.y, q.y) && other.p.y >= Math.Min(p.y, q.y));
-                }
-                else
-                {
-                    return (other.p.x <= Math.Max(p.x, q.x) && other.p.x >= Math.Min(p.x, q.x));
-                }
+                float y = points[i % points.Count].y;
+                float x1 = points[(i - 1) % points.Count].x;
+                float x2 = points[(i + 1) % points.Count].x;
+
+                cArea += (y * (x1 - x2)) / 2;
+
             }
-
-            return (ccw1 * ccw2 <= 0 & ccw3 * ccw4 <= 0);
-        }
-
-        public static double ccw(Line line, Vec r)
-        {
-            return line.n.x * r.x + line.n.y * r.y - line.a;
+            return cArea;
         }
     }
 
+
+    class Country
+    {
+        public List<Polygon> parts { get; set; }
+        public string name;
+        private float cArea = 0.0f;
+        //private float scaling = 1.173423676f;
+        private float scaling = 1f;
+
+        public Country(string name)
+        {
+            parts = new List<Polygon>();
+            this.name = name;
+        }
+
+        public float area()
+        {
+            cArea = 0.0f;
+            foreach (Polygon part in parts)
+            {
+                this.cArea += part.area();
+            }
+            return this.cArea * scaling;
+        }
+
+    }
 
     class Program
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Deutschland Fläche");
+            SVGReader r = new SVGReader("DeutschlandMitStaedten.svg");
+            //SVGReader r = new SVGReader("test.svg");
+            List<Country> ctry = r.parse();
+            foreach (Country c in ctry)
+            {
+                c.area();
+            }
 
-
-
-
-
+            foreach (Country c in ctry)
+            {
+                Console.WriteLine(String.Format("Fläche von {0}: {1}km²", c.name, c.area()));
+                //Console.WriteLine( c.area());
+            }
 
             Console.WriteLine("Ende");
             Console.ReadKey();
-
-
 
         }
     }
