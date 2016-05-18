@@ -1,31 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
+
 
 namespace CompGeo2
 {
     struct City
     {
         public string name;
-        public Vec coordinates;
+        public Point coordinates;
     }
 
-    class Vec
+    class Point
     {
         public float x { get; set; }
         public float y { get; set; }
 
-        public Vec(float x, float y)
+        public Point(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public bool Equals(Vec other, float epsilon)
+        public bool Equals(Point other, float epsilon)
         {
             if (Math.Abs(this.x - other.x) <= epsilon && Math.Abs(this.y - other.y) <= epsilon)
                 return true;
@@ -36,12 +32,12 @@ namespace CompGeo2
 
     class Polygon
     {
-        public List<Vec> points { get; set; }
+        public List<Point> points { get; set; }
         private float pArea = 0.0f;
 
         public Polygon()
         {
-            points = new List<Vec>();
+            points = new List<Point>();
         }
 
         public float area()
@@ -68,8 +64,8 @@ namespace CompGeo2
             int i, j = 0;
             for (i = 0, j = nrOfPointsInPoly - 1; i < nrOfPointsInPoly; j = i++)
             {
-                Vec pti = points[i];
-                Vec ptj = points[j];
+                Point pti = points[i];
+                Point ptj = points[j];
 
                 if (((points[i].y > y) != (points[j].y > y)) &&
                     (x < (points[j].x - points[i].x) * (y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
@@ -78,7 +74,7 @@ namespace CompGeo2
             return c;
         }
 
-        public bool contains(Vec point)
+        public bool contains(Point point)
         {
             return contains(point.x, point.y);
         }
@@ -87,7 +83,7 @@ namespace CompGeo2
         // Only true if the second polygon is fully included.
         public bool contains(Polygon other)
         {
-            foreach (Vec v in other.points)
+            foreach (Point v in other.points)
             {
                 if (!this.contains(v))
                 {
@@ -113,7 +109,7 @@ namespace CompGeo2
             this.name = name;
         }
 
-        public float area()
+        private Polygon getMainLand()
         {
             Polygon main = new Polygon();
             foreach (Polygon p in parts)
@@ -123,35 +119,42 @@ namespace CompGeo2
                     main = p;
                 }
             }
-            cArea = main.area();
-            Console.WriteLine(main.area());
+            return main;
+        }
+
+        public float area()
+        {
+            if (cArea != 0)
+                return cArea;
+
             foreach (Polygon poly in parts)
             {
-                if (poly != main)
-                    if (main.contains(poly))
+                foreach (Polygon poly2 in parts)
+                {
+                    if (poly.contains(poly2))
                     {
-                        this.cArea -= poly.area();
-                        Console.WriteLine(-poly.area());
+                        this.cArea -= poly2.area() * 2;
+                        //Console.WriteLine(-poly.area());
                     }
-                    else
-                    {
-                        this.cArea += poly.area();
-                        Console.WriteLine(poly.area());
-                    }
+                }
+                this.cArea += poly.area();
             }
+
             return this.cArea * scaling;
         }
 
         public bool contains(City city)
         {
+            int count = 0;
             foreach (Polygon p in parts)
             {
-                if (p.area() > 0 && p.contains(city.coordinates))
+                if (p.contains(city.coordinates))
                 {
-                    return true;
+                    if (++count > 1)
+                        return false;
                 }
             }
-            return false;
+            return (count == 1);
         }
     }
 
@@ -159,59 +162,33 @@ namespace CompGeo2
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Deutschland Fläche");
-            SVGReader r = new SVGReader("DeutschlandMitStaedten.svg");
-            //SVGReader r = new SVGReader("test.svg");
+            Console.WriteLine("==================================");
+            Console.WriteLine("|| Deutschland Fläche           ||");
+            Console.WriteLine("==================================");
 
+            SVGReader r = new SVGReader("DeutschlandMitStaedten.svg");
             List<Country> countries = r.getCountries();
             List<City> cities = r.getCities();
 
-            //foreach (Country ctry in countries)
-            //{
-            //    foreach (City city in cities)
-            //    {
-            //        if (ctry.contains(city))
-            //            Console.WriteLine(String.Format("{0} liegt in {1}", city.name, ctry.name));
-            //    }
-            //}
+            float sum = 0;
 
-            foreach (Country c in countries)
+            Console.WriteLine();
+            foreach (Country ctry in countries)
             {
-                //Console.WriteLine(String.Format("{0} {1}", c.name, c.area()));
-                Console.WriteLine(String.Format("Fläche von {0}: {1}km²", c.name, c.area()));
+                foreach (City city in cities)
+                {
+                    if (ctry.contains(city))
+                    {
+                        sum += ctry.area();
+                        Console.WriteLine("{0,-23}: {1,7} km² : {2}", ctry.name, ctry.area(), city.name);
+                    }
+                }
             }
-
-
-            //Polygon p = new Polygon();
-            //p.points.Add(new Vec(0, 0));
-            //p.points.Add(new Vec(10, 0));
-            //p.points.Add(new Vec(10, 10));
-            //p.points.Add(new Vec(0, 10));
-
-            //Vec v = new Vec(10, 10);
-
-            //Console.WriteLine("\r\n--------------\r\n");
-            //Console.WriteLine(p.area());
-            //Console.WriteLine(p.contains(10, 10));
-            //Console.WriteLine(p.contains(new Vec(5, 5)));
-            //Console.WriteLine(p.contains(new Vec(5, 10)));
-            //Console.WriteLine(p.contains(new Vec(10, 5)));
-            //Console.WriteLine(p.contains(new Vec(0, 5)));
-            //Console.WriteLine(p.contains(new Vec(5, 0)));
-
-            //Console.WriteLine("\r\n--------------\r\n");
-            //Random rnd = new Random();
-            //for (int i = 0; i < 20000; i++)
-            //{
-            //    double x = rnd.NextDouble() * 10;
-            //    double y = rnd.NextDouble() * 10;
-            //    if (!p.contains(x, y))
-            //        Console.WriteLine(String.Format("({0}|{1})", rnd.NextDouble() * 10, rnd.NextDouble() * 10));
-
-            //}
-
+            Console.WriteLine();
+            Console.WriteLine("{0,-23}: {1,6} km²", "Deutschland", sum);
             Console.WriteLine("\r\n--------------\r\n");
             Console.WriteLine("Ende");
+
             Console.ReadKey();
 
         }

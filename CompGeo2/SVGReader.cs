@@ -12,7 +12,7 @@ namespace CompGeo2
     class SVGReader
     {
         private List<Country> countries;
-        private Vec cursor;
+        private Point cursor;
         private Polygon p;
         private Country c;
         private string filePath;
@@ -20,7 +20,7 @@ namespace CompGeo2
         public SVGReader(string path)
         {
             this.filePath = path;
-            cursor = new Vec(0, 0);
+            cursor = new Point(0, 0);
             countries = new List<Country>();
         }
 
@@ -30,7 +30,7 @@ namespace CompGeo2
 
             foreach (XmlNode path in svgPaths)
             {
-                c = new Country(path.Attributes["id"].Value);
+                c = new Country(path.Attributes["id"].Value.Replace("__x26__", "-"));
 
                 string coords = path.Attributes["d"].Value;
                 foreach (var raw_line in coords.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
@@ -72,7 +72,7 @@ namespace CompGeo2
                 float x, y;
                 float.TryParse(city.Attributes["sodipodi:cx"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out x);
                 float.TryParse(city.Attributes["sodipodi:cy"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out y);
-                cities.Add(new City() { name = name, coordinates = new Vec(x, y) });
+                cities.Add(new City() { name = name, coordinates = new Point(x, y) });
             }
             return cities;
         }
@@ -91,13 +91,13 @@ namespace CompGeo2
                 case "L":
                     cursor.x = x;
                     cursor.y = y;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
 
                 case "l":
                     cursor.x += x;
                     cursor.y += y;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
 
                 case "z":
@@ -110,22 +110,22 @@ namespace CompGeo2
             {
                 case "V":
                     cursor.y = hvValue;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
 
                 case "v":
                     cursor.y += hvValue;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
 
                 case "H":
                     cursor.x = hvValue;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
 
                 case "h":
                     cursor.x += hvValue;
-                    p.points.Add(new Vec(cursor.x, cursor.y));
+                    p.points.Add(new Point(cursor.x, cursor.y));
                     break;
             }
         }

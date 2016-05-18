@@ -9,3 +9,4 @@ D:\VSProjects\computational-geometry\CompGeo2\obj\Debug\CompGeo2.pdb
 D:\VSProjects\computational-geometry\CompGeo2\bin\Debug\CompGeo2.exe
 D:\VSProjects\computational-geometry\CompGeo2\bin\Debug\CompGeo2.pdb
 D:\VSProjects\computational-geometry\CompGeo2\obj\Debug\CompGeo2.csprojResolveAssemblyReference.cache
+D:\Workspace\computational-geometry\CompGeo2\obj\Debug\CompGeo2.csprojResolveAssemblyReference.cache
