@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompGeo1", "CompGeo1\CompGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompGeo2", "CompGeo2\CompGeo2.csproj", "{4D48D330-5272-4DB5-9B41-0D1DEEA01761}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompGeo3", "CompGeo3\CompGeo3.csproj", "{3A828877-0112-45FA-BBEE-502AA0E907BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4D48D330-5272-4DB5-9B41-0D1DEEA01761}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D48D330-5272-4DB5-9B41-0D1DEEA01761}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D48D330-5272-4DB5-9B41-0D1DEEA01761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A828877-0112-45FA-BBEE-502AA0E907BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A828877-0112-45FA-BBEE-502AA0E907BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A828877-0112-45FA-BBEE-502AA0E907BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A828877-0112-45FA-BBEE-502AA0E907BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
