@@ -57,6 +57,12 @@ namespace CompGeo3
             }
         }
 
+        internal float getNewY(float x)
+        {
+            float m = (q.y - p.y) / (q.x - p.x);
+            return m * (x - p.x) + p.y;
+        }
+
         public Point intersection(Line other)
         {
             if (this.intersect(other))

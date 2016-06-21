@@ -28,7 +28,10 @@ namespace CompGeo1
                 return false;
         }
 
-
+        public override string ToString()
+        {
+            return String.Format("({0}|{1})", x, y);
+        }
     }
 
     class Line
@@ -93,6 +96,11 @@ namespace CompGeo1
 
             return n.x * r.x + n.y * r.y - a;
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0}->{1}", p, q);
+        }
     }
 
 
@@ -108,7 +116,7 @@ namespace CompGeo1
 
             List<Line> lines = new List<Line>();
 
-            StreamReader f = new StreamReader("s_100000_1.dat");
+            StreamReader f = new StreamReader("s_1000_1.dat");
             //StreamReader f = new StreamReader("test.dat");
 
             int lineNr = 0;
@@ -140,7 +148,7 @@ namespace CompGeo1
                     }
                     if (lines[i].intersect(lines[j]) && lines[j].intersect(lines[i]))
                     {
-                        //Console.WriteLine(String.Format("Intersection found between lines {0} and {1}", lines[i].nr, lines[j].nr));
+                        Console.WriteLine(String.Format("Intersection found between lines {0} and {1}", lines[i], lines[j]));
                         found++;
                     }
                 }

@@ -52,7 +52,8 @@ namespace CompGeo3
     class IntersectPoint : StartPoint
     {
         public Line otherLine;
-        public IntersectPoint(float x, float y, Line line, Line otherLine) : base(x, y, line) { this.otherLine = line; }
+        public IntersectPoint(Point p, Line line, Line otherLine) : base(p, line) { this.otherLine = otherLine; }
+        public IntersectPoint(float x, float y, Line line, Line otherLine) : base(x, y, line) { this.otherLine = otherLine; }
     }
 
 }

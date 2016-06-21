@@ -8,7 +8,7 @@ namespace CompGeo3
         IGNORE_INVALID_DATA,
         EXCEPT_ON_INVALID_DATA,
         NULL_ON_INVALID_DATA,
-        EMPTY_ON_INVALID_DATA
+        STOP_ON_INVALID_DATA
     }
 
     internal class InvalidDataException : ArgumentException
@@ -17,6 +17,11 @@ namespace CompGeo3
             : base("Invalid Lines Found: \r\n" + String.Join("\r\n", invalidLines))
         {
         }
+        public InvalidDataException(Point invalidPoint)
+            : base("Invalid Intersection Found: " + invalidPoint)
+        {
+        }
+
     }
 
 
@@ -29,7 +34,7 @@ namespace CompGeo3
         private SortedList<float, Point> events = new SortedList<float, Point>();
 
         private SweepLine<Line> sweepLine = new SweepLine<Line>();
-
+        private List<Point> result = new List<Point>();
 
         public LineSweep(List<Line> lines, LineSweepMethod option)
         {
@@ -54,8 +59,10 @@ namespace CompGeo3
                 }
                 else
                 {
-                    events.Add(l.p.x, new StartPoint(p, l));
-                    events.Add(l.q.x, new EndPoint(q, l));
+                    Point start = p.x > q.x ? q : p;
+                    Point end = p.x > q.x ? p : q;
+                    events.Add(start.x, new StartPoint(start, l));
+                    events.Add(end.x, new EndPoint(end, l));
                 }
             }
 
@@ -69,23 +76,90 @@ namespace CompGeo3
         {
             if (option == LineSweepMethod.NULL_ON_INVALID_DATA && invalidLines.Count > 0)
                 return null;
-            else if (option == LineSweepMethod.EMPTY_ON_INVALID_DATA && invalidLines.Count > 0)
-                return new List<Point>();
+            else if (option == LineSweepMethod.STOP_ON_INVALID_DATA && invalidLines.Count > 0)
+                return result;
             if (option == LineSweepMethod.EXCEPT_ON_INVALID_DATA && invalidLines.Count > 0)
                 throw new InvalidDataException(invalidLines);
 
-
-            foreach (Point p in events.Values)
+            int index = 0;
+            while (events.Count > 0)
             {
-                Console.WriteLine(p);
-                // Sweep here
+                Point p = events.Values[0];
+
+                List<IntersectPoint> list = new List<IntersectPoint>();
+                if (p is EndPoint)
+                {
+                    list = sweepLine.TreatEndPoint((EndPoint)p);
+                }
+                else if (p is IntersectPoint)
+                {
+                    result.Add(p);
+                    list = sweepLine.TreatIntersectionPoint((IntersectPoint)p);
+                }
+                else
+                {
+                    list = sweepLine.TreatStartPoint((StartPoint)p);
+                }
+
+                foreach (IntersectPoint iP in list)
+                {
+                    if (!AddIntersectionToEvents(iP))
+                    {
+                        if (option == LineSweepMethod.NULL_ON_INVALID_DATA)
+                            return null;
+                        else if (option == LineSweepMethod.STOP_ON_INVALID_DATA)
+                            return result;
+                    }
+                }
+
+                events.Remove(p.x);
+                index++;
             }
 
-
-            return null;
+            return result;
         }
 
+        private bool AddIntersectionToEvents(IntersectPoint iP)
+        {
+            if (!events.ContainsKey(iP.x))
+            {
+                events.Add(iP.x, iP);
+                return true;
+            }
+            else
+            {
+                switch (option)
+                {
+                    case LineSweepMethod.EXCEPT_ON_INVALID_DATA:
+                        throw new InvalidDataException(iP);
+
+                    case LineSweepMethod.IGNORE_INVALID_DATA:
+                        Point invalid = events[iP.x];
+                        if (invalid is IntersectPoint)
+                        {
+                            IntersectPoint invalidIntersection = (IntersectPoint)invalid;
+                            events.Remove(invalidIntersection.line.p.x);
+                            events.Remove(invalidIntersection.line.q.x);
+                            events.Remove(invalidIntersection.otherLine.p.x);
+                            events.Remove(invalidIntersection.otherLine.q.x);
+                            events.Remove(invalidIntersection.x);
+                            events.Add(iP.x, iP);
+                            return true;
+                        }
+                        else
+                        {
+                            StartPoint invalidPoint = (StartPoint)invalid;
+                            events.Remove(invalidPoint.line.p.x);
+                            events.Remove(invalidPoint.line.q.x);
+                            events.Add(iP.x, iP);
+                            return true;
+                        }
 
 
+                    default:
+                        return false;
+                }
+            }
+        }
     }
 }
