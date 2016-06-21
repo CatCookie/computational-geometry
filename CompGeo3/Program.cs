@@ -14,7 +14,7 @@ namespace CompGeo3
 
             List<Line> lines = new List<Line>();
 
-            StreamReader f = new StreamReader("s_10000_1.dat");
+            StreamReader f = new StreamReader("s_100000_1.dat");
             //StreamReader f = new StreamReader("test.dat");
 
             int lineNr = 0;
@@ -35,12 +35,17 @@ namespace CompGeo3
 
            
             LineSweep sweeper = new LineSweep(lines, LineSweepMethod.IGNORE_INVALID_DATA);
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             List<Point> result = sweeper.Sweep();
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            
 
             foreach (IntersectPoint p in result)
                 Console.WriteLine(p + " ==== " + p.line + " with " + p.otherLine);
 
-            
+            Console.WriteLine(elapsedMs + " ms");
 
 
             Console.ReadKey();

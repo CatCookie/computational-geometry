@@ -45,6 +45,7 @@ namespace CompGeo3
 
         }
 
+        /// Create the Datastructures to work with 
         private void BuildDataStructures()
         {
             foreach (Line l in lines)
@@ -52,8 +53,8 @@ namespace CompGeo3
                 Point p = l.p;
                 Point q = l.q;
 
-                // Add points to event list
-                if (events.ContainsKey(p.x) || events.ContainsKey(q.x))
+                // Add points to event list if they are disjunct
+                if (p.x == q.x || events.ContainsKey(p.x) || events.ContainsKey(q.x))
                 {
                     invalidLines.Add(l);
                 }
@@ -71,7 +72,8 @@ namespace CompGeo3
         }
 
 
-
+        /// Sweeps through all events 
+        /// This is the core of the algorithm 
         internal List<Point> Sweep()
         {
             if (option == LineSweepMethod.NULL_ON_INVALID_DATA && invalidLines.Count > 0)
@@ -89,18 +91,22 @@ namespace CompGeo3
                 List<IntersectPoint> list = new List<IntersectPoint>();
                 if (p is EndPoint)
                 {
+                    // Treat end point
                     list = sweepLine.TreatEndPoint((EndPoint)p);
                 }
                 else if (p is IntersectPoint)
                 {
+                    // Treat intersection point
                     result.Add(p);
                     list = sweepLine.TreatIntersectionPoint((IntersectPoint)p);
                 }
                 else
                 {
+                    // Treat start point
                     list = sweepLine.TreatStartPoint((StartPoint)p);
                 }
 
+                // Add found intersection points to the events
                 foreach (IntersectPoint iP in list)
                 {
                     if (!AddIntersectionToEvents(iP))
@@ -119,6 +125,7 @@ namespace CompGeo3
             return result;
         }
 
+        /// Extra treatment for intersection points with nondisjunct x coordinates in the eventlist
         private bool AddIntersectionToEvents(IntersectPoint iP)
         {
             if (!events.ContainsKey(iP.x))
@@ -154,7 +161,6 @@ namespace CompGeo3
                             events.Add(iP.x, iP);
                             return true;
                         }
-
 
                     default:
                         return false;

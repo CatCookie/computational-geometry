@@ -21,6 +21,7 @@ namespace CompGeo3
             base.Remove(p.line);
         }
 
+        /// Calculate new Y-values for the sweep line 
         private List<float> CalculateNewYValues(float x)
         {
             List<float> newValues = new List<float>();
@@ -33,6 +34,7 @@ namespace CompGeo3
             return newValues;
         }
 
+        /// Swap the the corresponding lines of an intersection point
         private void Swap(IntersectPoint p)
         {
             int indexA = this.IndexOf(p.line);
@@ -96,10 +98,16 @@ namespace CompGeo3
             return retVal;
         }
 
+        /// Treat intersection point
+        /// 
+        /// Get lines of the intersection
+        /// swap lines of the intersection
+        /// check for intersection with upper and lower lines
         public List<IntersectPoint> TreatIntersectionPoint(IntersectPoint p)
         {
             List<IntersectPoint> retVal = new List<IntersectPoint>();
-            this.Swap(p);
+
+            // Get upper and lower intersection lines
             int indexLine = IndexOf(p.line);
             int indexOtherLine = IndexOf(p.otherLine);
 
@@ -108,6 +116,10 @@ namespace CompGeo3
             int lowerIndex = Math.Min(indexLine, indexOtherLine);
             Line lowerLine = this[lowerIndex];
 
+            // swap Lines
+            this.Swap(p);
+
+            // Check line below lower intersection line
             if (lowerIndex - 1 >= 0)
             {
                 Line other = this[lowerIndex - 1];
@@ -117,6 +129,7 @@ namespace CompGeo3
                     retVal.Add(new IntersectPoint(intersect, lowerLine, other));
             }
 
+            // Check line above upper intersection line
             if (upperIndex + 1 < this.Count)
             {
                 Line other = this[upperIndex + 1];
