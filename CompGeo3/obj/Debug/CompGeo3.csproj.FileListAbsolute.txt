@@ -1,0 +1,6 @@
+D:\Workspace\computational-geometry\CompGeo3\bin\Debug\CompGeo3.exe.config
+D:\Workspace\computational-geometry\CompGeo3\bin\Debug\CompGeo3.exe
+D:\Workspace\computational-geometry\CompGeo3\bin\Debug\CompGeo3.pdb
+D:\Workspace\computational-geometry\CompGeo3\obj\Debug\CompGeo3.exe
+D:\Workspace\computational-geometry\CompGeo3\obj\Debug\CompGeo3.pdb
+D:\Workspace\computational-geometry\CompGeo3\obj\Debug\CompGeo3.csprojResolveAssemblyReference.cache
